@@ -14,10 +14,33 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.example.androidapp.ui.theme.AndroidAppTheme
 import io.flutter.embedding.android.FlutterActivity
+import io.flutter.embedding.engine.FlutterEngine
+import io.flutter.embedding.engine.FlutterEngineCache
+import io.flutter.embedding.engine.dart.DartExecutor
 
 class MainActivity : ComponentActivity() {
+
+    private lateinit var flutterEngine : FlutterEngine
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Instantiate a FlutterEngine.
+        flutterEngine = FlutterEngine(this)
+
+        // Configure an initial route. (main by default, so it's optional in this case)
+        flutterEngine.navigationChannel.setInitialRoute("/info");
+
+        // Start executing Dart code to pre-warm the FlutterEngine.
+        flutterEngine.dartExecutor.executeDartEntrypoint(
+            DartExecutor.DartEntrypoint.createDefault()
+        )
+
+        // Cache the FlutterEngine to be used by FlutterActivity.
+        FlutterEngineCache
+            .getInstance()
+            .put("my_engine_id", flutterEngine)
+
+
         setContent {
             AndroidAppTheme {
                 Surface(
@@ -29,7 +52,7 @@ class MainActivity : ComponentActivity() {
                         horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
                         Button(onClick = { goToFlutterModule() }) {
-                            Text("Hello Flutter Module")
+                            Text("Ejecutar módulo de Flutter")
                         }
                     }
                 }
@@ -38,8 +61,15 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun goToFlutterModule(){
-        startActivity(
+        /*startActivity(
             FlutterActivity.createDefaultIntent(this)
+        )*/
+
+        ///If we have a pre-warmed engine, we must use the cachedEngine
+        startActivity(
+            FlutterActivity
+                .withCachedEngine("my_engine_id")
+                .build(this)
         )
     }
 }

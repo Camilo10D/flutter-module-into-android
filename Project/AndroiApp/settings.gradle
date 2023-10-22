@@ -6,7 +6,7 @@ pluginManagement {
     }
 }
 dependencyResolutionManagement {
-    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositoriesMode.set(RepositoriesMode.PREFER_PROJECT)
     repositories {
         google()
         mavenCentral()
@@ -15,6 +15,7 @@ dependencyResolutionManagement {
 
 rootProject.name = "AndroidApp"
 include ':app'
+
 setBinding(new Binding([gradle: this]))
 evaluate(new File(
         settingsDir.parentFile,
